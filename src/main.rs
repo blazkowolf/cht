@@ -3,26 +3,29 @@ mod config;
 mod error;
 
 use std::env;
-use std::error::Error;
-use std::process;
+use std::io;
+use std::io::Write;
 
-use cht::Cht;
+use hyper::{body::HttpBody as _, Body, Response};
+
+use cht::ChtClient;
 use config::Config;
 
-use hyper::{body::HttpBody as _, Client};
-use tokio::io::{self, AsyncWriteExt as _};
-
-type Result<T> = std::result::Result<T, Box<dyn Error + Send + Sync>>;
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let args: Vec<String> = env::args().collect();
-    let config = Config::new(&args).unwrap_or_else(|err| {
-        println!("Problem parsing arguments: {}", err);
-        process::exit(1);
-    });
-    if let Err(e) = Cht::run(config) {
-        println!("Application error: {}", e);
-        process::exit(1);
+    let config = Config::new(&args)?;
+    let mut res: Response<Body> = ChtClient::default().cheat(config).await?;
+
+    // Stream the body, writing each chunk to stdout as we get it
+    // (instead of buffering and printing at the end).
+    while let Some(next) = res.data().await {
+        let chunk = next?;
+        io::stdout().write_all(&chunk)?;
     }
+
+    println!("\n\nDone!");
+    Ok(())
 }

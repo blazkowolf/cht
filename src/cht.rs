@@ -1,24 +1,46 @@
-use std::error::Error;
-
 use crate::config::Config;
 use crate::error::ChtError;
 use hyper::Uri;
+use std::error;
 
-pub struct Cht;
+use hyper::{Body, Client, Response};
 
-impl Cht {
-    pub async fn run(config: Config) -> Result<(), Box<dyn Error + Send + Sync>> {
-        let uri = Cht::get_req_uri(config)?;
-        println!("{:?}", uri);
+pub struct ChtClient {
+    scheme: String,
+    base_uri: String,
+}
 
-        Ok(())
+impl Default for ChtClient {
+    fn default() -> Self {
+        return ChtClient {
+            scheme: "http".to_string(),
+            base_uri: "cht.sh".to_string(),
+        };
+    }
+}
+
+impl ChtClient {
+    pub async fn cheat(
+        &self,
+        config: Config,
+    ) -> Result<Response<Body>, Box<dyn error::Error + Send + Sync>> {
+        let uri = self.get_req_uri(config)?;
+        let client = Client::new();
+
+        let res = client.get(uri).await?;
+
+        println!("Response: {}", res.status());
+        println!("Headers: {:#?}\n", res.headers());
+
+        Ok(res)
     }
 
-    fn get_req_uri(config: Config) -> Result<Uri, ChtError> {
-        let req_str = match config.get_query_str() {
-            Some(qry_str) => format!("https://cht.sh/{}/{}", config.lang, qry_str),
-            None => format!("https://cht.sh/{}", config.lang),
-        };
+    fn get_req_uri(&self, config: Config) -> Result<Uri, ChtError> {
+        let qry_str = config.get_query_str().unwrap_or(":list".to_string());
+        let req_str = format!(
+            "{}://{}/{}/{}",
+            self.scheme, self.base_uri, config.lang, qry_str
+        );
         let uri: Uri = req_str.parse()?;
 
         Ok(uri)
