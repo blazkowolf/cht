@@ -9,14 +9,7 @@ pub enum ChtError {
 }
 
 impl error::Error for ChtError {
-    fn description(&self) -> &str {
-        match *self {
-            ChtError::InvalidChtShUri(_) => "Not a valid cheat.sh URI",
-            ChtError::TooFewArguments => "Not enough arguments! Must provide a programming language name and optionally a query string.",
-        }
-    }
-
-    fn cause(&self) -> Option<&dyn error::Error> {
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match *self {
             ChtError::InvalidChtShUri(ref err) => Some(err),
             ChtError::TooFewArguments => None,
@@ -27,8 +20,10 @@ impl error::Error for ChtError {
 impl fmt::Display for ChtError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match *self {
-            ChtError::InvalidChtShUri(ref err) => err.fmt(f),
-            ChtError::TooFewArguments => f.write_str("TooFewArguments"),
+            ChtError::InvalidChtShUri(ref _err) => f.write_str("invalid cheat.sh URL provided"),
+            ChtError::TooFewArguments => f.write_str(
+                "a programming language name and an optional query string were not provided",
+            ),
         }
     }
 }

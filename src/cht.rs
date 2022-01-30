@@ -12,10 +12,10 @@ pub struct ChtClient {
 
 impl Default for ChtClient {
     fn default() -> Self {
-        return ChtClient {
+        ChtClient {
             scheme: "http".to_string(),
             base_uri: "cht.sh".to_string(),
-        };
+        }
     }
 }
 
@@ -36,7 +36,9 @@ impl ChtClient {
     }
 
     fn get_req_uri(&self, config: Config) -> Result<Uri, ChtError> {
-        let qry_str = config.get_query_str().unwrap_or(":list".to_string());
+        let qry_str = config
+            .get_query_str()
+            .unwrap_or_else(|| ":list".to_string());
         let req_str = format!(
             "{}://{}/{}/{}",
             self.scheme, self.base_uri, config.lang, qry_str
