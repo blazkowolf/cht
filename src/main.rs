@@ -26,6 +26,5 @@ async fn main() -> Result<()> {
         io::stdout().write_all(&chunk)?;
     }
 
-    println!("\n\nDone!");
     Ok(())
 }
