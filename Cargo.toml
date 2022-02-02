@@ -8,7 +8,7 @@ readme = "README.md"
 repository = "https://github.com/blazkowolf/cht"
 license = "MIT"
 keywords = ["cht.sh", "cheat.sh", "cheat", "cli", "client"]
-categories = ["asynchronous", "command-line-utilities", "concurrency", "network-programming", "web-programming::http-client"]
+categories = ["asynchronous", "command-line-utilities", "concurrency", "web-programming::http-client"]
 
 [dependencies]
 futures = "0.3.19"
