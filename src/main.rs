@@ -1,23 +1,22 @@
-mod cht;
-mod config;
+mod client;
 mod error;
 
-use std::env;
 use std::io;
 use std::io::Write;
 
 use hyper::{body::HttpBody as _, Body, Response};
+use clap::Parser;
 
-use cht::ChtClient;
-use config::Config;
+use client::config::ChtArgs;
+use client::ChtClient;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
+
 #[tokio::main]
 async fn main() -> Result<()> {
-    let args: Vec<String> = env::args().collect();
-    let config = Config::new(&args)?;
-    let mut res: Response<Body> = ChtClient::default().cheat(config).await?;
+    let config = ChtArgs::parse();
+    let mut res: Response<Body> = ChtClient::default().cheat(&config).await?;
 
     // Stream the body, writing each chunk to stdout as we get it
     // (instead of buffering and printing at the end).

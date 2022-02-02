@@ -1,6 +1,7 @@
-use crate::config::Config;
-use crate::error::ChtError;
-use hyper::{header::USER_AGENT, Uri};
+pub mod config;
+
+use crate::{error::ChtError, ChtArgs};
+use hyper::{header::USER_AGENT, Uri, StatusCode};
 use std::error;
 
 use hyper::{Body, Client, Request, Response};
@@ -30,26 +31,28 @@ impl ChtClient {
 
     pub async fn cheat(
         &self,
-        config: Config,
-    ) -> Result<Response<Body>, Box<dyn error::Error + Send + Sync>> {
-        let uri = self.get_req_uri(config)?;
+        path_config: &ChtArgs,
+    ) -> Result<Response<Body>, ChtError> {
+        let uri = self.get_req_uri(path_config)?;
         let req = Request::get(uri)
+            // User-Agent header set to `curl` is required
+            // for cht.sh to return plain text reponse
             .header(USER_AGENT, "curl")
             .body(Body::empty())?;
 
         let client = Client::new();
         let res = client.request(req).await?;
 
-        Ok(res)
+        return match res.status() {
+            StatusCode::NOT_FOUND => Err(ChtError::UnknownCheatSheet),
+            _ => Ok(res)
+        }
     }
 
-    fn get_req_uri(&self, config: Config) -> Result<Uri, ChtError> {
-        let qry_str = config
-            .get_query_str()
-            .unwrap_or_else(|| ":list".to_string());
+    fn get_req_uri(&self, path_config: &ChtArgs) -> Result<Uri, ChtError> {
         let req_str = format!(
-            "{}://{}/{}/{}",
-            self.scheme, self.base_uri, config.lang, qry_str
+            "{}://{}/{}",
+            self.scheme, self.base_uri, path_config
         );
         let uri: Uri = req_str.parse()?;
 
