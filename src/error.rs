@@ -17,7 +17,6 @@ impl error::Error for ChtError {
             ChtError::UnknownCheatSheet => None,
             ChtError::InvalidChtRequest(ref err) => Some(err),
             ChtError::Error(ref err) => Some(err),
-            _ => None,
         }
     }
 }

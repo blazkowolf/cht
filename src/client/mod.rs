@@ -2,7 +2,7 @@ pub mod config;
 
 use crate::{error::ChtError, ChtArgs};
 use hyper::{header::USER_AGENT, Uri, StatusCode};
-use std::error;
+
 
 use hyper::{Body, Client, Request, Response};
 
@@ -43,7 +43,7 @@ impl ChtClient {
         let client = Client::new();
         let res = client.request(req).await?;
 
-        return match res.status() {
+        match res.status() {
             StatusCode::NOT_FOUND => Err(ChtError::UnknownCheatSheet),
             _ => Ok(res)
         }
