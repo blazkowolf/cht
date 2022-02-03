@@ -1,5 +1,5 @@
 [package]
-name = "cht"
+name = "chtsh"
 version = "0.1.0"
 edition = "2021"
 description = "Rust CLI for interacting with https://cht.sh"
