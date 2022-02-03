@@ -14,4 +14,4 @@ categories = ["asynchronous", "command-line-utilities", "concurrency", "web-prog
 futures = "0.3.19"
 hyper = { version = "0.14.16", features = ["full"] }
 clap = { version = "3.0.14", features = ["derive"] }
-tokio = { version = "1.16.0", features = ["full"] }
+tokio = { version = "1.16.1", features = ["full"] }
