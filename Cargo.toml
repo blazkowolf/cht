@@ -7,7 +7,7 @@ authors = ["blazkowolf"]
 readme = "README.md"
 repository = "https://github.com/blazkowolf/cht"
 license = "MIT"
-keywords = ["cht.sh", "cheat.sh", "cheat", "cli", "client"]
+keywords = ["cheat", "sheet", "cli", "client"]
 categories = ["asynchronous", "command-line-utilities", "concurrency", "web-programming::http-client"]
 
 [dependencies]
