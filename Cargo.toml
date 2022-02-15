@@ -1,6 +1,6 @@
 [package]
 name = "chtsh"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Rust CLI for interacting with https://cht.sh"
 authors = ["blazkowolf"]
