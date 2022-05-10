@@ -10,27 +10,30 @@ and it is stable and feature complete.
 
 ## Usage
 
-```sh
+```
 chtsh <LANGUAGE> [QUERY_PARTS]
 ```
 
-`LANGUAGE` is required and must be a [valid programming language or topic](https://cht.sh/:list).
+### Args
 
-`QUERY_PARTS` is an optional freeform parameter where you can ask a question
-regarding the provided `LANGUAGE` value. If left empty, `QUERY_PARTS`'s value defaults to
-`:list` which will print the known topics for the value provided in `LANGUAGE`.
+| Arg         | Required | Desc                                                                                                                                                                  |
+| ----------- |:--------:| --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| LANGUAGE    | ✔        | Must be a [valid programming language or topic](https://cht.sh/:list).                                                                                                |
+| QUERY_PARTS | ❌       | Freeform parameter where you can ask a question regarding the provided `LANGUAGE`. Defaults to `:list` which will print the known topics for the provided `LANGUAGE`. |
+
+
+### Options
+
+| Option          | Desc                      |
+| --------------- | ------------------------- |
+| `-h, --help`    | Print help information    |
+| `-V, --version` | Print version information |
 
 _Valid usage examples:_
 
 ```sh
 chtsh go
-```
-
-```sh
 chtsh rust error handling
-```
-
-```sh
 chtsh java stream filter
 ```
 
