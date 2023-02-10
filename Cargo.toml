@@ -11,7 +11,7 @@ keywords = ["cheat", "sheet", "cli", "client"]
 categories = ["asynchronous", "command-line-utilities", "concurrency", "web-programming::http-client"]
 
 [dependencies]
-futures = "0.3.19"
-hyper = { version = "0.14.16", features = ["full"] }
-clap = { version = "3.0.14", features = ["derive"] }
-tokio = { version = "1.16.1", features = ["full"] }
+futures = "0.3.26"
+hyper = { version = "0.14.24", features = ["full"] }
+clap = { version = "4.1.4", features = ["derive"] }
+tokio = { version = "1.25.0", features = ["full"] }

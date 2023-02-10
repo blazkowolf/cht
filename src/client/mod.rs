@@ -1,60 +1,48 @@
 pub mod config;
 
-use crate::{error::ChtError, ChtArgs};
-use hyper::{header::USER_AGENT, Uri, StatusCode};
+use crate::{error::ChtshError, ChtshClientConfig};
+use hyper::client::HttpConnector;
+use hyper::{header::USER_AGENT, Body, Client, Request, Response, StatusCode, Uri};
 
-
-use hyper::{Body, Client, Request, Response};
-
-pub struct ChtClient {
-    scheme: String,
-    base_uri: String,
+#[derive(Debug, Default)]
+pub struct ChtshClient {
+    client: Client<HttpConnector, Body>,
+    config: ChtshClientConfig,
 }
 
-impl Default for ChtClient {
-    fn default() -> Self {
-        ChtClient {
-            scheme: "http".to_string(),
-            base_uri: "cht.sh".to_string(),
-        }
-    }
-}
-
-impl ChtClient {
-    #[allow(dead_code)]
-    pub fn new(scheme: &str, base_uri: &str) -> ChtClient {
-        ChtClient {
-            scheme: scheme.to_owned(),
-            base_uri: base_uri.to_owned(),
+impl ChtshClient {
+    pub fn new(config: ChtshClientConfig) -> Self {
+        Self {
+            config,
+            ..Default::default()
         }
     }
 
-    pub async fn cheat(
-        &self,
-        path_config: &ChtArgs,
-    ) -> Result<Response<Body>, ChtError> {
-        let uri = self.get_req_uri(path_config)?;
+    pub async fn cheat(&self, language: &str, query_parts: &[&str]) -> Result<Response<Body>, ChtshError> {
+        let uri = self.get_req_uri(language, query_parts)?;
         let req = Request::get(uri)
             // User-Agent header set to `curl` is required
             // for cht.sh to return plain text reponse
             .header(USER_AGENT, "curl")
             .body(Body::empty())?;
 
-        let client = Client::new();
-        let res = client.request(req).await?;
+        let res = self.client.request(req).await?;
 
         match res.status() {
-            StatusCode::NOT_FOUND => Err(ChtError::UnknownCheatSheet),
-            _ => Ok(res)
+            StatusCode::NOT_FOUND => Err(ChtshError::UnknownCheatSheet),
+            _ => Ok(res),
         }
     }
 
-    fn get_req_uri(&self, path_config: &ChtArgs) -> Result<Uri, ChtError> {
-        let req_str = format!(
-            "{}://{}/{}",
-            self.scheme, self.base_uri, path_config
-        );
-        let uri: Uri = req_str.parse()?;
+    fn get_req_uri(&self, language: &str, query_parts: &[&str]) -> Result<Uri, ChtshError> {
+        let path_and_query = format!("/{}/{}", language, query_parts.join("+"));
+        let scheme = self.config.base_url.scheme_str().unwrap();
+        let authority = self.config.base_url.authority().map(|a| a.as_str()).unwrap();
+        let uri = Uri::builder()
+            .scheme(scheme)
+            .authority(authority)
+            .path_and_query(path_and_query)
+            .build()?;
 
         Ok(uri)
     }

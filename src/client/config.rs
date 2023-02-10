@@ -1,18 +1,28 @@
-use clap::Parser;
-use std::fmt;
+use hyper::Uri;
 
-#[derive(Parser, Debug, PartialEq)]
-#[clap(name = "cht.sh Rust CLI", author, version, about, long_about = None)]
-pub struct ChtArgs {
-    #[clap(required = true)]
-    language: String,
-
-    #[clap(default_value = ":list")]
-    query_parts: Vec<String>,
+#[derive(Debug)]
+pub struct ChtshClientConfig {
+    pub base_url: Uri,
 }
 
-impl fmt::Display for ChtArgs {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter.write_fmt(format_args!("{}/{}", self.language, self.query_parts.join("+")))
+impl ChtshClientConfig {
+    pub fn new(base_url: &str) -> Self {
+        Self {
+            base_url: base_url.parse().expect("base_url must be a valid URL segment"),
+        }
     }
 }
+
+impl Default for ChtshClientConfig {
+    fn default() -> Self {
+        Self {
+            base_url: Uri::from_static("http://cht.sh"),
+        }
+    }
+}
+
+// impl std::fmt::Display for ChtshClientConfig {
+//     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> std::fmt::Result {
+//         formatter.write_fmt(format_args!("{}/{}", self.language, self.query_parts.join("+")))
+//     }
+// }
