@@ -55,13 +55,13 @@ where
         let mut res: Response<Body> = self
             .client
             .cheat(
-                self.input.language.as_str(),
-                self.input
+                &self.input.language,
+                &self
+                    .input
                     .query_parts
                     .iter()
-                    .map(|s| s.as_str())
-                    .collect::<Vec<&str>>()
-                    .as_slice(),
+                    .map(String::as_str)
+                    .collect::<Vec<_>>(),
             )
             .await?;
 
@@ -90,6 +90,10 @@ pub struct ChtshOptions {
 
 impl fmt::Display for ChtshOptions {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter.write_fmt(format_args!("{}/{}", self.language, self.query_parts.join("+")))
+        formatter.write_fmt(format_args!(
+            "{}/{}",
+            self.language,
+            self.query_parts.join("+")
+        ))
     }
 }

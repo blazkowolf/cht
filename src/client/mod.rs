@@ -1,4 +1,5 @@
 pub mod config;
+pub mod error;
 
 use crate::{error::ChtshError, ChtshClientConfig};
 use hyper::client::HttpConnector;
@@ -18,8 +19,12 @@ impl ChtshClient {
         }
     }
 
-    pub async fn cheat(&self, language: &str, query_parts: &[&str]) -> Result<Response<Body>, ChtshError> {
-        let uri = self.get_req_uri(language, query_parts)?;
+    pub async fn cheat(
+        &self,
+        language: &str,
+        query_parts: impl AsRef<[&str]>,
+    ) -> Result<Response<Body>, ChtshError> {
+        let uri = self.get_req_uri(language, query_parts.as_ref())?;
         let req = Request::get(uri)
             // User-Agent header set to `curl` is required
             // for cht.sh to return plain text reponse
@@ -36,8 +41,13 @@ impl ChtshClient {
 
     fn get_req_uri(&self, language: &str, query_parts: &[&str]) -> Result<Uri, ChtshError> {
         let path_and_query = format!("/{}/{}", language, query_parts.join("+"));
-        let scheme = self.config.base_url.scheme_str().unwrap();
-        let authority = self.config.base_url.authority().map(|a| a.as_str()).unwrap();
+        let scheme = self.config.base_uri.scheme_str().unwrap();
+        let authority = self
+            .config
+            .base_uri
+            .authority()
+            .map(|a| a.as_str())
+            .unwrap();
         let uri = Uri::builder()
             .scheme(scheme)
             .authority(authority)
@@ -45,5 +55,15 @@ impl ChtshClient {
             .build()?;
 
         Ok(uri)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_works() {
+        let _ = ChtshClientConfig::default();
     }
 }
