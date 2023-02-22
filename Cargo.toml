@@ -8,10 +8,16 @@ readme = "README.md"
 repository = "https://github.com/blazkowolf/cht"
 license = "MIT"
 keywords = ["cheat", "sheet", "cli", "client"]
-categories = ["asynchronous", "command-line-utilities", "concurrency", "web-programming::http-client"]
+categories = [
+  "asynchronous",
+  "command-line-utilities",
+  "concurrency",
+  "web-programming::http-client",
+]
 
 [dependencies]
 futures = "0.3.26"
-hyper = { version = "0.14.24", features = ["full"] }
+hyper = { version = "0.14.24", features = ["http1", "client", "runtime"] }
+hyper-tls = { version = "0.5.0" }
 clap = { version = "4.1.4", features = ["derive"] }
 tokio = { version = "1.25.0", features = ["full"] }
