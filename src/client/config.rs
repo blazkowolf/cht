@@ -18,7 +18,7 @@ impl ChtshClientConfig {
 impl Default for ChtshClientConfig {
     fn default() -> Self {
         Self {
-            base_uri: Uri::from_static("http://cht.sh"),
+            base_uri: Uri::from_static("https://cht.sh"),
         }
     }
 }
@@ -36,7 +36,7 @@ mod tests {
     #[test]
     fn default_works() {
         let config = ChtshClientConfig::default();
-        assert_eq!(config.base_uri, Uri::from_static("http://cht.sh"))
+        assert_eq!(config.base_uri, Uri::from_static("https://cht.sh"))
     }
 
     #[test]

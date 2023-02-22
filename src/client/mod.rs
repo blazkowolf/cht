@@ -4,18 +4,20 @@ pub mod error;
 use crate::{error::ChtshError, ChtshClientConfig};
 use hyper::client::HttpConnector;
 use hyper::{header::USER_AGENT, Body, Client, Request, Response, StatusCode, Uri};
+use hyper_tls::HttpsConnector;
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct ChtshClient {
-    client: Client<HttpConnector, Body>,
+    client: Client<HttpsConnector<HttpConnector>, Body>,
     config: ChtshClientConfig,
 }
 
 impl ChtshClient {
     pub fn new(config: ChtshClientConfig) -> Self {
+        let https = HttpsConnector::new();
         Self {
+            client: Client::builder().build::<_, Body>(https),
             config,
-            ..Default::default()
         }
     }
 

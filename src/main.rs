@@ -8,7 +8,7 @@ use std::fmt;
 use std::io::{self, Write};
 
 use clap::Parser;
-use hyper::{body::HttpBody as _, Body, Response};
+use hyper::{body, Body, Response};
 
 use client::config::ChtshClientConfig;
 use client::ChtshClient;
@@ -52,7 +52,7 @@ where
     TWrite: Write,
 {
     pub async fn run(mut self) -> Result<()> {
-        let mut res: Response<Body> = self
+        let res: Response<Body> = self
             .client
             .cheat(
                 &self.input.language,
@@ -65,12 +65,15 @@ where
             )
             .await?;
 
+        let bytes = body::to_bytes(res).await?;
+        self.writer.write_all(&bytes)?;
+
         // Stream the body, writing each chunk to stdout as we get it
         // (instead of buffering and printing at the end).
-        while let Some(next) = res.data().await {
-            let chunk = next?;
-            self.writer.write_all(&chunk)?;
-        }
+        //         while let Some(next) = res.data().await {
+        //             let chunk = next?;
+        //             self.writer.write_all(&chunk)?;
+        //         }
 
         Ok(())
     }
